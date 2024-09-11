@@ -30,8 +30,8 @@
 }
 
 
-function setupNtrigaCookies() {
-    window.NtrigaConsent = {
+function setupConsentCookies() {
+    window.ConsentCookies = {
         All: false,
         EssentialCookies: false,
         AnalyticalCookies: false,
@@ -57,7 +57,7 @@ function setupNtrigaCookies() {
             return;
         }
         // Show
-        if (!getCookie('ntriga-cookie-chosen')) {
+        if (!getCookie('consent-cookie-chosen')) {
             popup.classList.remove('hidden');
         }
 
@@ -70,7 +70,7 @@ function setupNtrigaCookies() {
 
             if (getCookie(cookie_name)) {
                 const consent_value = (getCookie(cookie_name) === 'true' || getCookie(cookie_name) === true);
-                NtrigaConsent[cookie_name] = consent_value;
+                ConsentCookies[cookie_name] = consent_value;
                 checkbox.checked = consent_value;
             }
 
@@ -169,12 +169,12 @@ function consentSave(consent_checkboxes) {
 }
 
 function setConsent(cookie_name, value) {
-    NtrigaConsent[cookie_name] = value;
+    ConsentCookies[cookie_name] = value;
     setCookie(cookie_name, value, { expires: 365 });
 }
 
 function consentUpdated() {
-    setCookie('ntriga-cookie-chosen', true, { expires: 365 });
+    setCookie('consent-cookie-chosen', true, { expires: 365 });
 
     if (typeof dataLayer !== 'undefined') {
         dataLayer.push({'event':'cookie_consent_marketing'});
@@ -198,7 +198,7 @@ function setCookie(name, value, days) {
     document.cookie = `${name}=${value || ""}${expires}; path=/`;
 }
 
-setupNtrigaCookies();
+setupConsentCookies();
 </script>
 <div class="ntr-cookies hidden" id="ntr-cookies">
     <div class="container">
