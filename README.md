@@ -4,9 +4,10 @@ Package to handle cookies for Ntriga projects
 
 ### Dependencies
 
-| Release  | Supported Pimcore Versions | Supported Symfony Versions | Maintained     | Branch |
-|----------|----------------------------|----------------------------|----------------|--------|
-| **11.x** | `11.0`                     | `6.2`                      | Feature Branch | master |
+| Release  | Supported Pimcore Versions | Supported Symfony Versions | Branch  |
+|----------|----------------------------|----------------------------|---------|
+| **10.x** | `10.0`                     | `5.2`                      | 10.x    |
+| **11.x** | `11.0`                     | `6.2`                      | main    |
 
 ## Installation
 
@@ -23,13 +24,16 @@ return [
     Ntriga\PimcoreCookies\PimcoreNtrigaCookiesBundle::class => ['all' => true],
 ];
 ```
+
 ## Usage
 
-Add to include before the closing body tag in your layout template:
+Add include before the closing body tag in your layout template:
     
 ```twig
 {% include '@PimcoreNtrigaCookies/cookies.html.twig' %}
 ```
+
+Import the translations. [You can find the csv here](data/cookie-translations.csv)
 
 ## Changelog
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
