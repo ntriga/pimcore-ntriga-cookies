@@ -29,6 +29,11 @@
     z-index: 999;
     box-shadow: 0 -10px 10px #fff;
 }
+@media (max-width: 767px) {
+    .ntr-cookies{
+        max-height: 80%;
+    }
+}
 </style>
 <script>
     function ready(fn) {
@@ -277,7 +282,7 @@ setupConsentCookies();
             </div><!--/ .row -->
         </div>
 
-        <div class="row align-items-center gx-2 mt-4" id="ntr-cookies-buttons">
+        <div class="row align-items-center gx-2 mt-4 sticky-buttons" id="ntr-cookies-buttons">
             <div class="col-auto mb-3"><a class="btn btn-secondary" href="javascript:;" id="ntr-cookie-options">{{ 'cookies.button.set-cookies'|trans }}</a></div>
             <div class="col-auto mb-3"><a class="btn btn-primary" href="javascript:;" id="ntr-cookie-decline">{{ 'cookies.button.only-necessary'|trans }}</a></div>
             <div class="col-auto mb-3"><a class="btn btn-primary" href="javascript:;" id="ntr-cookie-accept">{{ 'cookies.button.accept-and-close'|trans }}</a></div>
