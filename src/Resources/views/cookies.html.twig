@@ -1,0 +1,278 @@
+{% set doc_cookies = document.getProperty('cookies_document') %}
+<style>
+.ntr-cookies {
+    z-index: 2000000000;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 30px 0 0;
+    background-color: #fff;
+    box-shadow: 0 0 40px rgba(0,0,0, .1);
+
+    opacity: 1;
+    transition: opacity .15s ease-in-out;
+}
+.ntr-cookies.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+</style>
+<script>
+    function ready(fn) {
+    if (document.readyState != 'loading'){
+        fn();
+    } else {
+        document.addEventListener('DOMContentLoaded', fn);
+    }
+}
+
+
+function setupNtrigaCookies() {
+    window.NtrigaConsent = {
+        All: false,
+        EssentialCookies: false,
+        AnalyticalCookies: false,
+        MarketingCookies: false,
+        VideoCookies: false,
+    };
+
+    ready(function() {
+        const btn_show = document.getElementById('ntr-cookie-show');
+        const popup = document.getElementById('ntr-cookies');
+        const btn_accept = document.getElementById('ntr-cookie-accept');
+        const btn_accept_all = document.getElementById('ntr-cookie-accept-all');
+        const btn_options = document.getElementById('ntr-cookie-options');
+        const btn_decline = document.getElementById('ntr-cookie-decline');
+        const btn_save = document.getElementById('ntr-cookie-save');
+
+        const consent_options = document.getElementById('ntr-cookies-options');
+        const consent_buttons = document.getElementById('ntr-cookies-buttons');
+        const consent_checkboxes = document.querySelectorAll('[data-consent-for]');
+
+        if (!popup) {
+            console.error('Cookie popup element not found.');
+            return;
+        }
+        // Show
+        if (!getCookie('ntriga-cookie-chosen')) {
+            popup.classList.remove('hidden');
+        }
+
+        // Load prior consent
+        let checked_count = 0;
+
+        for (let i=0; i < consent_checkboxes.length; i++) {
+            const checkbox = consent_checkboxes[i];
+            const cookie_name = checkbox.getAttribute('data-consent-for');
+
+            if (getCookie(cookie_name)) {
+                const consent_value = (getCookie(cookie_name) === 'true' || getCookie(cookie_name) === true);
+                NtrigaConsent[cookie_name] = consent_value;
+                checkbox.checked = consent_value;
+            }
+
+            if (checkbox.checked) {
+                checked_count++;
+            }
+        }
+
+        setConsent('All', (checked_count == consent_checkboxes.length));
+
+        // Accept
+        btn_accept.addEventListener('click', function() {
+            consentAll(consent_checkboxes);
+            popup.classList.add('hidden');
+        });
+
+        btn_accept_all.addEventListener('click', function() {
+            consentAll(consent_checkboxes);
+            popup.classList.add('hidden');
+        });
+
+        // Refuse
+        btn_decline.addEventListener('click', function() {
+            consentNone(consent_checkboxes)
+            popup.classList.add('hidden');
+        });
+
+        // Select
+        btn_options.addEventListener('click', function() {
+            consent_options.classList.remove('d-none');
+            consent_buttons.classList.add('d-none');
+        }, false);
+
+        // Save
+        btn_save.addEventListener('click', function() {
+            consentSave(consent_checkboxes);
+            consent_options.classList.add('d-none');
+            consent_buttons.classList.remove('d-none');
+            popup.classList.add('hidden');
+        });
+
+        // Show popup
+        btn_show.addEventListener('click', function() {
+            popup.classList.remove('hidden');
+        });
+
+    });
+
+}
+
+function consentAll(consent_checkboxes) {
+    for (let i=0; i < consent_checkboxes.length; i++) {
+        const checkbox = consent_checkboxes[i];
+        const cookie_name = checkbox.getAttribute('data-consent-for');
+
+        checkbox.checked = true;
+        setConsent(cookie_name, true);
+    }
+
+    setConsent('All', true);
+
+    consentUpdated();
+}
+
+function consentNone(consent_checkboxes) {
+    for (let i=0; i < consent_checkboxes.length; i++) {
+        const checkbox = consent_checkboxes[i];
+        const cookie_name = checkbox.getAttribute('data-consent-for');
+
+        checkbox.checked = false;
+        setConsent(cookie_name, false);
+    }
+
+    setConsent('All', false);
+
+    consentUpdated();
+}
+
+function consentSave(consent_checkboxes) {
+    let checked_count = 0;
+
+    for (let i=0; i < consent_checkboxes.length; i++) {
+        const checkbox = consent_checkboxes[i];
+        const cookie_name = checkbox.getAttribute('data-consent-for');
+
+        setConsent(cookie_name, checkbox.checked);
+
+        if (checkbox.checked) {
+            checked_count++;
+        }
+    }
+
+    setConsent('All', (checked_count == consent_checkboxes.length));
+
+    consentUpdated();
+}
+
+function setConsent(cookie_name, value) {
+    NtrigaConsent[cookie_name] = value;
+    setCookie(cookie_name, value, { expires: 365 });
+}
+
+function consentUpdated() {
+    setCookie('ntriga-cookie-chosen', true, { expires: 365 });
+
+    if (typeof dataLayer !== 'undefined') {
+        dataLayer.push({'event':'cookie_consent_marketing'});
+    }
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = `; expires=${date.toUTCString()}`;
+    }
+    document.cookie = `${name}=${value || ""}${expires}; path=/`;
+}
+
+setupNtrigaCookies();
+</script>
+<div class="ntr-cookies hidden" id="ntr-cookies">
+    <div class="container">
+        <p class="h4">{{  'Hi, voor je verder gaat… eerst even jouw beslissing.'|trans }}</p>
+        <p>
+            {{ 'Wij en onze partners gebruiken cookies om de website goed te kunnen laten werken, voor het optimaliseren van jouw gebruikerservaring en het bijhouden van statistieken.'|trans}}
+            {{ 'We gebruiken enkel met jouw toestemming optionele cookies voor marketingdoeleinden zoals het tonen van gepersonaliseerde advertenties.'|trans}}
+            {{ 'Lees er meer over in onze'|trans }} <a href="{{ doc_cookies }}">{{ 'cookieverklaring'|trans }}</a>.
+        </p>
+
+        <div id="ntr-cookies-options" class="d-none">
+            <div class="form-check custom-checkbox mb-1">
+                <input class="form-check-input" type="checkbox" value="true" id="ntr-cookie-1" data-consent-for="EssentialCookies" checked disabled>
+
+                <label class="form-check-label" for="ntr-cookie-1">{{ 'Essentiële en functionele cookies'|trans }}</label>
+            </div>
+            <p class="small">
+                {{ 'Deze cookies zijn nodig voor het goed functioneren van de website en kunnen niet worden geweigerd.'|trans }}
+                {{ 'Meer informatie'|trans }} <a href="{{ doc_cookies }}">{{ 'cookieverklaring'|trans }}</a>.
+            </p>
+
+            <div class="form-check custom-checkbox mb-1">
+                <input class="form-check-input" type="checkbox" value="true" id="ntr-cookie-2" data-consent-for="AnalyticalCookies" checked disabled>
+
+                <label class="form-check-label" for="ntr-cookie-2">{{ 'Analytische cookies' }}</label>
+            </div>
+            <p class="small">
+                {{ 'Wij gebruiken analytische cookies om bij te houden en te analyseren hoe gebruikers onze website gebruiken.'|trans }}
+                {{ 'Het gebruik van software voor webanalyse helpt ons te begrijpen hoe bezoekers onze website ervaren.'|trans }}
+                {{ 'We houden onder meer bij: hoeveel tijd bezoekers doorbrengen op de website, welke pagina’s zij bezoeken, waar men op de pagina klikt en tot hoe ver men scrolt.'|trans }}
+                {{ 'Deze gegevens worden zo veel mogelijk geanonimiseerd of gepseudonimiseerd.'|trans }}
+            </p>
+
+            <div class="form-check custom-checkbox mb-1">
+                <input class="form-check-input" type="checkbox" value="true" id="ntr-cookie-3" data-consent-for="MarketingCookies">
+
+                <label class="form-check-label" for="ntr-cookie-3">{{ 'Marketingcookies'|trans }}</label>
+            </div>
+            <p class="small">
+                {{ 'We maken gebruik van marketingcookies voor advertentie- en (re)marketingdoeleinden.'|trans }}
+                {{ 'Hiermee kunnen we de effectiviteit van onze campagnes en advertenties meten en verbeteren.'|trans }}
+                {{ 'Deze cookies worden enkel geplaatst nadat je hiervoor toestemming hebt gegeven.'|trans }}
+            </p>
+
+            <div class="form-check custom-checkbox mb-1">
+                <input class="form-check-input" type="checkbox" value="true" id="ntr-cookie-4" data-consent-for="VideoCookies">
+
+                <label class="form-check-label" for="ntr-cookie-4">{{ 'Video-cookies'|trans }}</label>
+            </div>
+            <p class="small">
+                {{ 'Wanneer we video’s van bijvoorbeeld Youtube of Vimeo integreren op onze website, plaatsen deze partijen cookies om meer te weten te komen over jouw surfgedrag.'|trans }}
+                {{ 'Indien je deze cookies niet toelaat, zullen we deze content niet tonen.'|trans }}
+                {{ 'Meer informatie'|trans }} <a href="{{ doc_cookies }}">{{ 'cookieverklaring'|trans }}</a>.
+            </p>
+
+            <div class="row gx-2 mt-4">
+                <div class="col-auto">
+                    <a class="btn btn-outline-dark mt-3 mb-3" href="javascript:;" id="ntr-cookie-save">{{ 'Keuze bevestigen' | trans }}</a>
+                </div>
+
+                <div class="col-auto">
+                    <a class="btn btn-outline-dark mt-3 mb-3" href="javascript:;" id="ntr-cookie-accept-all">{{ 'Alle cookies toestaan' | trans }}</a>
+                </div>
+            </div><!--/ .row -->
+        </div>
+
+        <div class="row align-items-center gx-2 mt-4" id="ntr-cookies-buttons">
+            <div class="col-auto mb-3"><a class="btn btn-secondary" href="javascript:;" id="ntr-cookie-options">{{ 'Cookies instellen'|trans }}</a></div>
+            <div class="col-auto mb-3"><a class="btn btn-primary" href="javascript:;" id="ntr-cookie-decline">{{ 'Alleen noodzakelijk'|trans }}</a></div>
+            <div class="col-auto mb-3"><a class="btn btn-primary" href="javascript:;" id="ntr-cookie-accept">{{ 'Akkoord en sluiten'|trans }}</a></div>
+        </div>
+
+        <p style="font-style: italic; font-size: 14px; font-weight: lighter;" class="mb-0">
+            {{ 'Je kunt jouw keuze op elk gewenst moment wijzigen via de cookieinstellingen onderaan de website'|trans }}
+        </p>
+    </div><!--/ .container -->
+</div>

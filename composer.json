@@ -1,0 +1,43 @@
+{
+    "name": "ntriga/pimcore-ntriga-cookies",
+    "version": "11.0.0",
+    "description": "Cookie banner for ntriga projects",
+    "keywords": [
+        "ntriga",
+        "pimcore",
+        "cookies"
+    ],
+    "homepage": "https://github.com/ntriga/pimcore-ntriga-cookies",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joey Daems",
+            "email": "joey@ntriga.agency",
+            "role": "Developer"
+        },
+        {
+            "name": "Vincent Bibauw",
+            "email": "vincent@ntriga.agency",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "pimcore/pimcore": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ntriga\\PimcoreCookies\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
