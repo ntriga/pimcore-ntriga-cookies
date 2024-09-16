@@ -32,6 +32,10 @@ Add include before the closing body tag in your layout template:
 ```twig
 {% include '@PimcoreNtrigaCookies/cookies.html.twig' %}
 ```
+When we don't want to set Analytical Cookies, we can pass a parameter
+```
+{% include '@PimcoreNtrigaCookies/cookies.html.twig' with {'AnalyticalCookies': 'false'} %}
+```
 
 Import the translations. [You can find the csv here](data/cookie-translations.csv)
 
