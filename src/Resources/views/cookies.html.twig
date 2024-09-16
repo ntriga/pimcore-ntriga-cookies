@@ -1,4 +1,5 @@
 {% set doc_cookies = document.getProperty('cookies_document') %}
+{% set AnalyticalCookies = AnalyticalCookies|default('true') %}
 <style>
 .ntr-cookies {
     z-index: 2000000000;
@@ -48,11 +49,18 @@
 function setupConsentCookies() {
     window.ConsentCookies = {
         All: false,
-        EssentialCookies: false,
-        AnalyticalCookies: false,
+        EssentialCookies: true,
+        AnalyticalCookies: {{ AnalyticalCookies }},
         MarketingCookies: false,
         VideoCookies: false,
     };
+
+    // If there is no cookie set for the ConsentCookies keys where the value is true, set the cookie for the key
+    for (const key in ConsentCookies) {
+        if (ConsentCookies[key] === true && !getCookie(key)) {
+            setConsent(key, true);
+        }
+    }
 
     ready(function() {
         const btn_show = document.getElementById('ntr-cookie-show');
@@ -235,7 +243,14 @@ setupConsentCookies();
             </p>
 
             <div class="form-check custom-checkbox mb-1">
-                <input class="form-check-input" type="checkbox" value="true" id="ntr-cookie-2" data-consent-for="AnalyticalCookies" checked disabled>
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="ntr-cookie-2"
+                    data-consent-for="AnalyticalCookies"
+                    {{ AnalyticalCookies == 'true' ? 'checked disabled' : '' }}
+                >
 
                 <label class="form-check-label fw-bold" for="ntr-cookie-2">
                     {{ 'cookies.analitics.title'|trans }}
@@ -269,13 +284,13 @@ setupConsentCookies();
 
             <div class="row gx-2 mt-4 sticky-buttons">
                 <div class="col-auto">
-                    <a class="btn btn-outline-dark mt-3 mb-3" href="javascript:;" id="ntr-cookie-save">
+                    <a class="btn btn-outline-dark mt-3 mb-3" href="javascript:" id="ntr-cookie-save">
                         {{ 'cookies.button.confirm-choice' | trans }}
                     </a>
                 </div>
 
                 <div class="col-auto">
-                    <a class="btn btn-outline-dark mt-3 mb-3" href="javascript:;" id="ntr-cookie-accept-all">
+                    <a class="btn btn-outline-dark mt-3 mb-3" href="javascript:" id="ntr-cookie-accept-all">
                         {{ 'cookies.button.accept-all' | trans }}
                     </a>
                 </div>
@@ -283,9 +298,9 @@ setupConsentCookies();
         </div>
 
         <div class="row align-items-center gx-2 mt-4 sticky-buttons" id="ntr-cookies-buttons">
-            <div class="col-auto mb-3"><a class="btn btn-secondary" href="javascript:;" id="ntr-cookie-options">{{ 'cookies.button.set-cookies'|trans }}</a></div>
-            <div class="col-auto mb-3"><a class="btn btn-primary" href="javascript:;" id="ntr-cookie-decline">{{ 'cookies.button.only-necessary'|trans }}</a></div>
-            <div class="col-auto mb-3"><a class="btn btn-primary" href="javascript:;" id="ntr-cookie-accept">{{ 'cookies.button.accept-and-close'|trans }}</a></div>
+            <div class="col-auto mb-3"><a class="btn btn-secondary" href="javascript:" id="ntr-cookie-options">{{ 'cookies.button.set-cookies'|trans }}</a></div>
+            <div class="col-auto mb-3"><a class="btn btn-primary" href="javascript:" id="ntr-cookie-decline">{{ 'cookies.button.only-necessary'|trans }}</a></div>
+            <div class="col-auto mb-3"><a class="btn btn-primary" href="javascript:" id="ntr-cookie-accept">{{ 'cookies.button.accept-and-close'|trans }}</a></div>
         </div>
 
         <p style="font-style: italic; font-size: 14px; font-weight: lighter;" class="mb-0 pb-3">

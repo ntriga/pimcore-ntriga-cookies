@@ -30,6 +30,10 @@ Add to include before the closing body tag in your layout template:
 ```twig
 {% include '@PimcoreNtrigaCookies/cookies.html.twig' %}
 ```
+When we don't want to set Analytical Cookies, we can pass a parameter
+```
+{% include '@PimcoreNtrigaCookies/cookies.html.twig' with {'AnalyticalCookies': 'false'} %}
+```
 
 ## Changelog
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
