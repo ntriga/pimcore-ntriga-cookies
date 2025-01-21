@@ -34,6 +34,9 @@
         .ntr-cookies{
             max-height: 237px;
         }
+        .ntr-cookies.ntr-cookies--options{
+            max-height: 600px;
+        }
         .ntr-cookies p{
             font-size: 1rem;
         }
@@ -72,6 +75,7 @@
         }
 
         ready(function() {
+            const cookies_window = document.getElementById('ntr-cookies');
             const btn_show = document.getElementById('ntr-cookie-show');
             const popup = document.getElementById('ntr-cookies');
             const btn_accept = document.getElementById('ntr-cookie-accept');
@@ -135,11 +139,13 @@
             btn_options.addEventListener('click', function() {
                 consent_options.classList.remove('d-none');
                 consent_buttons.classList.add('d-none');
+                cookies_window.classList.add('ntr-cookies--options');
             }, false);
 
             text_options.addEventListener('click', function() {
                 consent_options.classList.remove('d-none');
                 consent_buttons.classList.add('d-none');
+                cookies_window.classList.add('ntr-cookies--options');
             }, false);
 
             // Save
